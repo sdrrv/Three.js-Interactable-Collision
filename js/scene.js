@@ -3,10 +3,24 @@ let camera, renderer, scene
 let planet
 
 function createPlanet(){
-    const geometry = new THREE.SphereGeometry(1,100,100,0,360,0,180);
-    const material = new THREE.MeshNormalMaterial({color: 0x5bba1a});
-    planet = new THREE.Mesh(geometry,material);
+    let geometry = new THREE.SphereGeometry(5, 32, 32);
 
+    planet = new THREE.Object3D();
+
+    const material = new THREE.MeshBasicMaterial();
+    material.map= new THREE.TextureLoader().load('planet/earth.jpg');
+
+    //material.bumpMap = new THREE.TextureLoader().load('planet/normalMap.jpg');
+    material.bumpScale = 0.05;
+
+    material.specularMap =  new THREE.TextureLoader().load('planet/specularTexture.jpg');
+    material.specular  = new THREE.Color('grey');
+
+    let planetIn = new THREE.Mesh(geometry,material);
+
+
+
+    planet.add(planetIn);
     scene.add(planet)
 
 }
@@ -15,6 +29,7 @@ function createPlanet(){
 
 function animate(){
     renderer.render(scene,camera);
+    planet.rotation.y += 0.001;
 
 
 
@@ -26,7 +41,7 @@ function createScene() {
     'use strict';
 
     scene = new THREE.Scene();
-    scene.add(new THREE.AxesHelper(10));
+   // scene.add(new THREE.AxesHelper(10));
 
     const loader = new THREE.CubeTextureLoader();
     const texture = loader.load([
