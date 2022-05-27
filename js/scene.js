@@ -83,7 +83,7 @@ function createPlanet(){
         map        :  smap,
         specularMap: specmap,
         specular : new THREE.Color('grey'),
-        bumpScale  :  0.5,
+        bumpScale  :  0.3,
     });
 
     clouds = createClouds();
