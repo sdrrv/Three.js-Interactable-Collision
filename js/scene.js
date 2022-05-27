@@ -71,7 +71,7 @@ function createClouds(){
     }, false);
     imageMap.src = 'planet/cloud1.jpg';
 
-    geometry = new THREE.SphereGeometry(5.02, 32, 32)
+    geometry = new THREE.SphereGeometry(5.025, 32, 32)
     material = new THREE.MeshPhongMaterial({
         map: new THREE.Texture(canvasResult),
         side: THREE.DoubleSide,
