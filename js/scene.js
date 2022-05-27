@@ -2,6 +2,24 @@ let camera, renderer, scene
 
 let planet, clouds
 
+let satellite1
+
+function createSatellite(){
+    satellite1 = new THREE.Object3D();
+
+    let geometry = new THREE.SphereGeometry(0.2, 32, 32);
+    let material = new THREE.MeshPhongMaterial();
+
+    let sat1 = new THREE.Mesh(geometry,material);
+
+
+    sat1.position.x += 5;
+    sat1.position.z += 5;
+
+    satellite1.add(sat1);
+    scene.add(satellite1);
+}
+
 
 function createClouds(){
     let canvasResult, contextResult, imageMap, geometry, material, mesh;
@@ -101,9 +119,7 @@ function animate(){
     renderer.render(scene,camera);
     planet.rotation.y += 0.001;
     clouds.rotation.y -= 0.0001;
-
-
-
+    satellite1.rotation.y += 0.01;
 
     requestAnimationFrame(animate);
 }
@@ -116,12 +132,12 @@ function createScene() {
 
     const loader = new THREE.CubeTextureLoader();
     const texture = loader.load([
-       "galaxy/galaxy+X.png",
         "galaxy/galaxy-X.png",
-        "galaxy/galaxy+Y.png",
         "galaxy/galaxy-Y.png",
-        "galaxy/galaxy+Z.png",
         "galaxy/galaxy-Z.png",
+       "galaxy/galaxy+X.png",
+        "galaxy/galaxy+Y.png",
+        "galaxy/galaxy+Z.png",
     ]);
 
 
@@ -169,7 +185,7 @@ function init() {
 
 
     createPlanet();
-
+    createSatellite();
 
     render();
     animate();
