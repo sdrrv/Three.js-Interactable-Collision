@@ -1,5 +1,7 @@
 let camera, renderer, scene
 
+let teta, omega, r = 8
+
 let planet, clouds
 
 let satellite1
@@ -13,8 +15,8 @@ function createSatellite(){
     let sat1 = new THREE.Mesh(geometry,material);
 
 
-    sat1.position.x += 5;
-    sat1.position.z += 5;
+    //sat1.position.x += 5;
+    //sat1.position.z += 5;
 
     satellite1.add(sat1);
     scene.add(satellite1);
@@ -115,11 +117,21 @@ function createPlanet(){
 }
 
 
+
+
+
 function animate(){
     renderer.render(scene,camera);
     planet.rotation.y += 0.001;
-    clouds.rotation.y -= 0.0001;
-    satellite1.rotation.y += 0.01;
+    clouds.rotation.y += 0.0014;
+
+
+    satellite1.position.set(r* Math.sin(teta) *Math.sin(omega),
+    r * Math.cos(omega),
+    r * Math.cos(teta) * Math.sin(omega));
+
+    teta += 0.01;
+    //omega += 0.01;
 
     requestAnimationFrame(animate);
 }
@@ -128,7 +140,7 @@ function createScene() {
     'use strict';
 
     scene = new THREE.Scene();
-   // scene.add(new THREE.AxesHelper(10));
+    scene.add(new THREE.AxesHelper(10));
 
     const loader = new THREE.CubeTextureLoader();
     const texture = loader.load([
@@ -152,9 +164,9 @@ function createMainCamera() {
         window.innerWidth / window.innerHeight,
         1,
         1000);
-    camera.position.x = 10;
-    camera.position.y = 10;
-    camera.position.z = 10;
+    camera.position.x = 0;
+    camera.position.y = 0;
+    camera.position.z = 20;
     camera.lookAt(scene.position);
 }
 
@@ -166,12 +178,17 @@ function render() {
 
 
 function createLight(){
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    directionalLight.position.set(0,30,20);
     scene.add( directionalLight );
 }
 
 function init() {
     'use strict';
+
+
+    teta = Math.PI/2;
+    omega = Math.PI/2;
 
     renderer = new THREE.WebGLRenderer({
         antialias: true
