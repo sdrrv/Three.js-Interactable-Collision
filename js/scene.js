@@ -7,14 +7,29 @@ function createPlanet(){
 
     planet = new THREE.Object3D();
 
-    const material = new THREE.MeshBasicMaterial();
-    material.map= new THREE.TextureLoader().load('planet/earth.jpg');
+    //const material = new THREE.MeshBasicMaterial();
+    //material.map= new THREE.TextureLoader().load('planet/earth.jpg');
 
+    let smap = new THREE.TextureLoader().load('planet/earth.jpg');
+    let bmap= new THREE.TextureLoader().load('planet/normalMap.jpg');
+    let specmap = new THREE.TextureLoader().load('planet/specularTexture.jpg');
     //material.bumpMap = new THREE.TextureLoader().load('planet/normalMap.jpg');
-    material.bumpScale = 0.05;
+    //material.bumpScale = 0.05;
 
-    material.specularMap =  new THREE.TextureLoader().load('planet/specularTexture.jpg');
-    material.specular  = new THREE.Color('grey');
+    //material.specularMap =  new THREE.TextureLoader().load('planet/specularTexture.jpg');
+    //material.specular  = new THREE.Color('grey');
+
+
+    let material = new THREE.MeshPhongMaterial({
+        shininess  :  20,
+        bumpMap    :  bmap,
+        map        :  smap,
+        specularMap: specmap,
+        specular : new THREE.Color('grey'),
+        bumpScale  :  0.5,
+    });
+
+
 
     let planetIn = new THREE.Mesh(geometry,material);
 
