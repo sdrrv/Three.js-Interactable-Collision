@@ -118,7 +118,7 @@ function createPlanet(){
 
 
 
-
+let shipSeed =0.005;
 
 function animate(){
     renderer.render(scene,camera);
@@ -130,12 +130,17 @@ function animate(){
     r * Math.cos(omega),
     r * Math.cos(teta) * Math.sin(omega));
 
-    teta += 0.005;
+
+    if(arrowRightDown){
+
+    }
     //satellite1.rotation.y += 0.005;
     //omega += 0.01;
 
     requestAnimationFrame(animate);
 }
+
+
 
 function createScene() {
     'use strict';
@@ -186,6 +191,63 @@ function createLight(){
     scene.add( directionalLight );
 }
 
+
+function onResize() {
+    'use strict';
+
+    renderer.setSize(window.innerWidth, window.innerHeight);
+
+    if (window.innerHeight > 0 && window.innerWidth > 0) {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+    }
+
+}
+
+let arrowLeftDown, arrowUpDown, arrowRightDown, arrowDownDown
+
+function onKeyDown(e) {
+    'use strict';
+
+    switch (e.keyCode) {
+        case 37: //leftArrow
+            arrowLeftDown = true;
+            break;
+        case 38: //upArrow
+            arrowUpDown = true;
+            break;
+        case 39: //rightArrow
+            arrowRightDown = true;
+            break;
+        case 40: //downArrow
+            arrowDownDown = true;
+            break;
+    }
+
+}
+
+function onKeyUp(e) {
+    'use strict';
+
+    switch (e.keyCode) {
+        case 37: //leftArrow
+            arrowLeftDown = false;
+            break;
+        case 38: //upArrow
+            arrowUpDown = false;
+            break;
+        case 39: //rightArrow
+            arrowRightDown = false;
+            break;
+        case 40: //downArrow
+            arrowDownDown = false;
+            break;
+    }
+}
+
+
+
+
 function init() {
     'use strict';
 
@@ -210,4 +272,10 @@ function init() {
 
     render();
     animate();
+
+    window.addEventListener("keydown", onKeyDown);
+    window.addEventListener("keyup", onKeyUp);
+    window.addEventListener("resize", onResize);
 }
+
+
