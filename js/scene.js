@@ -7,9 +7,11 @@ let planet, clouds
 let satellite1
 
 function createSatellite(){
+    'use strict';
+
     satellite1 = new THREE.Object3D();
 
-    let geometry = new THREE.SphereGeometry(0.2, 32, 32);
+    let geometry = new THREE.BoxGeometry(5,0.5,1);
     let material = new THREE.MeshPhongMaterial();
 
     let sat1 = new THREE.Mesh(geometry,material);
@@ -118,33 +120,34 @@ function createPlanet(){
 
 
 
-let shipSeed =0.005;
+let shipSpeed =0.005;
 
 function animate(){
     renderer.render(scene,camera);
     planet.rotation.y += 0.001;
     clouds.rotation.y += 0.0014;
 
+    if(arrowRightDown){
+        teta += shipSpeed;
+    }
+    if(arrowLeftDown){
+        teta -= shipSpeed;
+    }
+    if(arrowUpDown){
+        omega -= shipSpeed;
+    }
+    if(arrowDownDown){
+        omega += shipSpeed;
+    }
+
+    satellite1.rotation.y = teta;
+    satellite1.rotation.x = omega;
 
     satellite1.position.set(r* Math.sin(teta) *Math.sin(omega),
     r * Math.cos(omega),
     r * Math.cos(teta) * Math.sin(omega));
 
 
-    if(arrowRightDown){
-        teta += shipSeed;
-    }
-    if(arrowLeftDown){
-        teta -= shipSeed;
-    }
-    if(arrowUpDown){
-        omega -= shipSeed;
-    }
-    if(arrowDownDown){
-        omega += shipSeed;
-    }
-    //satellite1.rotation.y += 0.005;
-    //omega += 0.01;
 
     requestAnimationFrame(animate);
 }
@@ -155,7 +158,7 @@ function createScene() {
     'use strict';
 
     scene = new THREE.Scene();
-   //scene.add(new THREE.AxesHelper(10));
+    scene.add(new THREE.AxesHelper(10));
 
     const loader = new THREE.CubeTextureLoader();
     const texture = loader.load([
@@ -173,7 +176,7 @@ function createScene() {
 }
 
 
-function createFollowCamera() {
+function createMainCamera() {
 
     'use strict';
     camera = new THREE.PerspectiveCamera(70,
@@ -185,6 +188,19 @@ function createFollowCamera() {
     camera.lookAt(scene.position);
     //satellite1.add(camera);
     scene.add(camera);
+}
+
+function createFollowCamera() {
+
+    'use strict';
+    camera = new THREE.PerspectiveCamera(70,
+        window.innerWidth / window.innerHeight,
+        1,
+        1000);
+    camera.position.y = 5;
+    camera.position.z = 3;
+    camera.lookAt(scene.position);
+    satellite1.add(camera);
 }
 
 
@@ -219,6 +235,12 @@ function onKeyDown(e) {
     'use strict';
 
     switch (e.keyCode) {
+        case 49: //1
+            createMainCamera();
+            break;
+        case 50: //2
+            createFollowCamera();
+            break;
         case 37: //leftArrow
             arrowLeftDown = true;
             break;
@@ -255,14 +277,13 @@ function onKeyUp(e) {
 }
 
 
-
+let clock;
 
 function init() {
     'use strict';
-
-
-    teta = Math.random();
-    omega = Math.random();
+    clock = new THREE.Clock();
+    teta = Math.PI/2;
+    omega = Math.PI/2;
 
     renderer = new THREE.WebGLRenderer({
         antialias: true
@@ -276,7 +297,7 @@ function init() {
 
     createPlanet();
     createSatellite();
-    createFollowCamera();
+    createMainCamera();
 
 
     render();
