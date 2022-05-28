@@ -31,17 +31,18 @@ function normalizeVector(vector) {
         newVector.push(vector[i] / norm);
     return newVector
 }
+/*
 def getPoint(x1, x0, dist, vector):
 seno = dist / getNorm(getDiff(x1, x0))
 angle = math.asin(seno)
 cos = math.cos(angle)
 d = getNorm(getDiff(x1, x0)) * cos
-return [x1[i] + d * vector[i] for i in range(3)]
+return [x1[i] + d * vector[i] for i in range(3)] */
 
 function getPoint(x1, x0, dist, vector){
-    let seno = dist / getNorm(getDiff(x1, x0))
-    let angle = math.asin(seno);
-    let cos = math.cos(angle);
+    //let seno = dist / getNorm(getDiff(x1, x0))
+    //let angle = math.asin(seno);
+  //  let cos = math.cos(angle);
 }
 
 
@@ -167,8 +168,8 @@ function createPlanet(){
 
 
 let shipSpeed =0.005;
-
 function animate(){
+
     renderer.render(scene,camera);
     planet.rotation.y += 0.001;
     clouds.rotation.y += 0.0014;
@@ -186,8 +187,7 @@ function animate(){
         omega += shipSpeed;
     }
 
-    satellite1.rotation.y = teta;
-    satellite1.rotation.x = omega;
+    satellite1.lookAt(planet.position);
 
     satellite1.position.set(r* Math.sin(teta) *Math.sin(omega),
     r * Math.cos(omega),
