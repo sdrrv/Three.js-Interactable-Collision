@@ -132,7 +132,16 @@ function animate(){
 
 
     if(arrowRightDown){
-
+        teta += shipSeed;
+    }
+    if(arrowLeftDown){
+        teta -= shipSeed;
+    }
+    if(arrowUpDown){
+        omega -= shipSeed;
+    }
+    if(arrowDownDown){
+        omega += shipSeed;
     }
     //satellite1.rotation.y += 0.005;
     //omega += 0.01;
@@ -252,8 +261,8 @@ function init() {
     'use strict';
 
 
-    teta = Math.PI/2;
-    omega = Math.PI/2;
+    teta = Math.random();
+    omega = Math.random();
 
     renderer = new THREE.WebGLRenderer({
         antialias: true
