@@ -140,8 +140,8 @@ function animate(){
         omega += shipSpeed;
     }
 
-    satellite1.rotation.y = teta;
-    satellite1.rotation.x = omega;
+    satellite1.lookAt(planet.position);
+
 
     satellite1.position.set(r* Math.sin(teta) *Math.sin(omega),
     r * Math.cos(omega),
