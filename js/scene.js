@@ -6,6 +6,52 @@ let planet, clouds
 
 let satellite1
 
+function getNorm(vector) {
+    return math.norm(vector);
+}
+
+function getExternalProduct(vector1, vector2) {
+    return math.cross(vector1, vector2);
+}
+function getDiff(vector1, vector2){
+    let newVector = [];
+    for (let i = 0; i < 3; i++)
+        newVector.push(vector1[i] - vector2[i]);
+    return newVector;
+}
+
+function getDistance(x0, x1, x2) {
+    return getNorm(getExternalProduct(getDiff(x2, x1), getDiff(x1, x0))) / getNorm(getDiff(x2, x1))
+}
+
+function normalizeVector(vector) {
+    let norm = getNorm(vector);
+    let newVector = [];
+    for (let i = 0; i < 3; i++)
+        newVector.push(vector[i] / norm);
+    return newVector
+}
+def getPoint(x1, x0, dist, vector):
+seno = dist / getNorm(getDiff(x1, x0))
+angle = math.asin(seno)
+cos = math.cos(angle)
+d = getNorm(getDiff(x1, x0)) * cos
+return [x1[i] + d * vector[i] for i in range(3)]
+
+function getPoint(x1, x0, dist, vector){
+    let seno = dist / getNorm(getDiff(x1, x0))
+    let angle = math.asin(seno);
+    let cos = math.cos(angle);
+}
+
+
+
+
+
+
+
+
+
 function createSatellite(){
     satellite1 = new THREE.Object3D();
 
