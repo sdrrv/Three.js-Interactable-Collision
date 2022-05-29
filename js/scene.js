@@ -4,7 +4,7 @@ let teta, omega, r = 8
 
 let planet, clouds
 
-let satellite1
+let spaceShipObject, wireframeBool;
 
 
 class spaceObject{
@@ -110,7 +110,7 @@ let rocket;
 function createSatellite(){
     'use strict';
 
-    satellite1 = new THREE.Object3D();
+    spaceShipObject = new THREE.Object3D();
 
     let geometry = new THREE.BoxGeometry(1,1,1);
     let material = new THREE.MeshPhongMaterial();
@@ -122,10 +122,58 @@ function createSatellite(){
     //sat1.position.x += 5;
     //sat1.position.z += 5;
 
-    satellite1.add(sat1);
-    scene.add(satellite1);
+    spaceShipObject.add(sat1);
+    scene.add(spaceShipObject);
 
-    rocket = new spaceObject(satellite1, Math.sqrt(3) / 2);
+}
+
+var shipBody, shipNose, engine1, engine2, engine3, engine4, shipVisor;
+function createSpaceShip(){
+    spaceShipObject = new THREE.Object3D();
+    createShipBody(shipBody);
+    createShipNose(shipNose);
+    createShipFireEngine(engine1, 4, -4, 0);
+    createShipFireEngine(engine2, -4, -4, 0);
+    createShipFireEngine(engine3, 0, -4, 4);
+    createShipFireEngine(engine4, 0, -4, -4);
+    createVisor(shipVisor, 0, 2, 0);
+    spaceShipObject.scale.set(0.15, 0.15, 0.15);
+    scene.add(spaceShipObject);
+    rocket = new spaceObject(spaceShipObject, Math.sqrt(3) / 2);
+
+}
+
+function createShipBody(obj){
+    let geometry = new THREE.CylinderGeometry(4, 4, 8, 16, 16, false, 0, 2 * Math.PI);
+    const material = new THREE.MeshToonMaterial( { color: 0x808080, wireframe: wireframeBool } );
+    obj = new THREE.Mesh(geometry, material);
+    obj.position.set(0, 0, 0);
+    spaceShipObject.add(obj);
+}
+
+function createShipNose(obj){
+    let geometry = new THREE.CylinderGeometry(1, 4, 4, 16, 1, false, 0, 2 * Math.PI);
+    const material = new THREE.MeshToonMaterial( { color: 0xff8c00, wireframe: wireframeBool } );
+    obj = new THREE.Mesh(geometry, material);
+    obj.position.set(0, 6, 0);
+    spaceShipObject.add(obj);
+}
+
+function createShipFireEngine(obj, x, y, z){
+    let geometry = new THREE.CapsuleGeometry(1.5, 2.5, 16, 16);
+    const material = new THREE.MeshToonMaterial( { color: 0x36454f, wireframe: wireframeBool } );
+    obj = new THREE.Mesh(geometry, material);
+    obj.position.set(x, y, z);
+    spaceShipObject.add(obj);
+}
+
+function createVisor(obj, x, y, z){
+    let geometry = new THREE.CylinderGeometry(4.01, 4.01, 2, 8, 4, false, 0, Math.PI * 0.35);
+    const material = new THREE.MeshToonMaterial( { color: 0x1ca8ff, wireframe: wireframeBool } );
+    obj = new THREE.Mesh(geometry, material);
+    obj.position.set(x, y, z);
+    obj.rotation.y = Math.PI * 0.08;
+    spaceShipObject.add(obj);
 }
 
 
@@ -250,7 +298,7 @@ function animate(){
         omega += shipSpeed;
     }
 
-    satellite1.lookAt(planet.position);
+    spaceShipObject.lookAt(planet.position);
     if (checkColision && hasColision(rocket, box, [r* Math.sin(teta) *Math.sin(omega),
         r * Math.cos(omega),
         r * Math.cos(teta) * Math.sin(omega)])) {
@@ -258,7 +306,7 @@ function animate(){
         console.log("colisonnnn");
     }
 
-    satellite1.position.set(r* Math.sin(teta) *Math.sin(omega),
+    spaceShipObject.position.set(r* Math.sin(teta) *Math.sin(omega),
     r * Math.cos(omega),
     r * Math.cos(teta) * Math.sin(omega));
 
@@ -301,7 +349,7 @@ function createMainCamera() {
     camera.position.z = 20;
     camera.position.y = 10;
     camera.lookAt(scene.position);
-    //satellite1.add(camera);
+    //spaceShipObject.add(camera);
     scene.add(camera);
 }
 
@@ -315,7 +363,7 @@ function createFollowCamera() {
     camera.position.y = 5;
     camera.position.z = 3;
     camera.lookAt(scene.position);
-    satellite1.add(camera);
+    spaceShipObject.add(camera);
 }
 
 
@@ -432,7 +480,7 @@ function init() {
     createlilbox();
 
     createPlanet();
-    createSatellite();
+    createSpaceShip();
     createMainCamera();
 
 
