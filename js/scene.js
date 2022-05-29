@@ -6,6 +6,14 @@ let planet, clouds
 
 let satellite1
 
+
+class spaceObject{
+    constructor(object, radius) {
+        this.object = object;
+        this.radius = radius
+    }
+}
+
 function getNorm(vector) {
     return math.norm(vector);
 }
@@ -21,6 +29,7 @@ function getDiff(vector1, vector2){
 }
 
 function getDistance(x0, x1, x2) {
+    console.log(getNorm(getExternalProduct(getDiff(x2, x1), getDiff(x1, x0))));
     return getNorm(getExternalProduct(getDiff(x2, x1), getDiff(x1, x0))) / getNorm(getDiff(x2, x1))
 }
 
@@ -39,27 +48,73 @@ cos = math.cos(angle)
 d = getNorm(getDiff(x1, x0)) * cos
 return [x1[i] + d * vector[i] for i in range(3)] */
 
-function getPoint(x1, x0, dist, vector){
-    //let seno = dist / getNorm(getDiff(x1, x0))
-    //let angle = math.asin(seno);
-  //  let cos = math.cos(angle);
+function getPoint(x1, x0, dist, vector) {
+    let seno = dist / getNorm(getDiff(x1, x0))
+    let angle = math.asin(seno);
+    let cos = math.cos(angle);
+    let d = getNorm(getDiff(x1, x0)) * cos
+    let newPoint = []
+    for (let i = 0; i < 3; i++)
+        newPoint.push(x1[i] + d * vector[i]);
+    return newPoint;
+}
+
+function inBetween(value0, value1, value2){
+    return (value0 >= value1 && value0 <= value2) || (value0 <= value1 && value0 >= value2)
+}
+
+function hasColision(spaceObject1, spaceObject2, nextPos) {
+   let pos0 = spaceObject2.object.position;
+   let pos1 = spaceObject1.object.position;
+   let x0 = [pos0.x, pos0.y, pos0.z];
+   let x1 = [pos1.x, pos1.y, pos1.z];
+   let x2 = nextPos;
+
+   let d = getDistance(x0, x1, x2);
+   //console.log(d);
+   if (d > (spaceObject1.radius + spaceObject2.radius)){
+        //console.log("tooo far")
+       return false;
+   }
+
+    //console.log("clossssssseeeeeeee")
+    let point = getPoint(x1, x0, d, normalizeVector(getDiff(x2, x1)));
+   //console.log(point);
+
+   if (inBetween(point[0], x1[0], x2[0]) && inBetween(point[1], x1[1], x2[1]) && inBetween(point[2], x1[2], x2[2]))
+       return true;
+
+   return getNorm(getDiff(x2, x0)) <= (spaceObject2.radius + spaceObject1.radius);
 }
 
 
 
 
+let box;
+function createlilbox(){
+    'use strict';
+    let geometry = new THREE.BoxGeometry(1,1,1);
+    let material = new THREE.MeshPhongMaterial();
+    box = new spaceObject(new THREE.Mesh(geometry, material), Math.sqrt(3) / 2);
+    let teta = Math.PI/2;
+    let omega = Math.PI/2;
+    box.object.position.set(r* Math.sin(teta) *Math.sin(omega),
+        r * Math.cos(omega),
+        r * Math.cos(teta) * Math.sin(omega));
+    scene.add(box.object);
+}
 
 
 
-
-
+let rocket;
 function createSatellite(){
     'use strict';
 
     satellite1 = new THREE.Object3D();
 
-    let geometry = new THREE.BoxGeometry(5,0.5,1);
+    let geometry = new THREE.BoxGeometry(1,1,1);
     let material = new THREE.MeshPhongMaterial();
+
 
     let sat1 = new THREE.Mesh(geometry,material);
 
@@ -69,6 +124,8 @@ function createSatellite(){
 
     satellite1.add(sat1);
     scene.add(satellite1);
+
+    rocket = new spaceObject(satellite1, Math.sqrt(3) / 2);
 }
 
 
@@ -167,27 +224,39 @@ function createPlanet(){
 
 
 
-let shipSpeed =0.005;
+//let shipSpeed =0.005;
+let shipSpeed =0.01;
 function animate(){
 
     renderer.render(scene,camera);
     planet.rotation.y += 0.001;
     clouds.rotation.y += 0.0014;
+    let checkColision = false;
 
     if(arrowRightDown){
+        checkColision = true;
         teta += shipSpeed;
     }
     if(arrowLeftDown){
+        checkColision = true;
         teta -= shipSpeed;
     }
     if(arrowUpDown){
+        checkColision = true;
         omega -= shipSpeed;
     }
     if(arrowDownDown){
+        checkColision = true;
         omega += shipSpeed;
     }
 
     satellite1.lookAt(planet.position);
+    if (checkColision && hasColision(rocket, box, [r* Math.sin(teta) *Math.sin(omega),
+        r * Math.cos(omega),
+        r * Math.cos(teta) * Math.sin(omega)])) {
+        scene.remove(box.object);
+        console.log("colisonnnn");
+    }
 
     satellite1.position.set(r* Math.sin(teta) *Math.sin(omega),
     r * Math.cos(omega),
@@ -327,9 +396,25 @@ let clock;
 
 function init() {
     'use strict';
+    //  ----------x0-------
+    //
+    //x1-------------------x2
+    let x0 = [0, 2.5, 0]
+    let x1 = [0, 0, 0]
+    let x2 = [0, 1, 0]
+    let d = getDistance(x0, x1, x2)
+    console.log(getDistance(x0, x1, x2))
+    console.log(getPoint(x1, x0, d, normalizeVector(getDiff(x2, x1))))
+
+    //let rocket = new spaceObject(x1, 1);
+    //let debris = new spaceObject(x0, 0.5);
+    //console.log(hasColision(rocket, debris, x2));
+
+
+
     clock = new THREE.Clock();
-    teta = Math.PI/2;
-    omega = Math.PI/2;
+    teta = Math.random();
+    omega = Math.random();
 
     renderer = new THREE.WebGLRenderer({
         antialias: true
@@ -340,6 +425,11 @@ function init() {
     createScene();
     createLight();
 
+
+
+
+
+    createlilbox();
 
     createPlanet();
     createSatellite();
