@@ -6,11 +6,53 @@ let planet, clouds
 
 let spaceShipObject, wireframeBool;
 
+let garbage = [];
+
 
 class spaceObject{
     constructor(object, radius) {
         this.object = object;
-        this.radius = radius
+        this.radius = radius;
+    }
+}
+
+function getRandomInt(max) {
+    return Math.floor(Math.random() * max);
+}
+
+function getGeometry(form){
+    switch (form){
+        case 0:
+            return
+    }
+}
+
+function createGarbage() {
+    for (let i = 0; i < 20; i++) {
+        let form = getRandomInt(4);
+        let garbageTeta = Math.random() * Math.PI;
+        let garbageOmega = Math.random() * 2 * Math.PI;
+        let geometry;
+        let radius;
+        const material = new THREE.MeshToonMaterial({color: 0xfc03c6});
+
+        switch (form) {
+            case 0:
+                geometry = new THREE.BoxGeometry(1, 1, 1, 1, 1, 1);
+                radius = Math.sqrt(3) / 2;
+                break;
+            case 1:
+                geometry = new THREE.ConeGeometry(1, 1, 16, 16, false, 0, Math.PI * 2);
+                radius = Math.sqrt(5) / 2;
+                break;
+        }
+
+        let garbageObject = new THREE.Mesh(geometry, material);
+        garbageObject.position.set(r* Math.sin(garbageTeta) *Math.sin(garbageOmega),
+            r * Math.cos(garbageOmega),
+            r * Math.cos(garbageTeta) * Math.sin(garbageOmega));
+        garbage.push(new spaceObject(garbageObject), radius);
+        scene.add(garbageObject);
     }
 }
 
@@ -40,13 +82,6 @@ function normalizeVector(vector) {
         newVector.push(vector[i] / norm);
     return newVector
 }
-/*
-def getPoint(x1, x0, dist, vector):
-seno = dist / getNorm(getDiff(x1, x0))
-angle = math.asin(seno)
-cos = math.cos(angle)
-d = getNorm(getDiff(x1, x0)) * cos
-return [x1[i] + d * vector[i] for i in range(3)] */
 
 function getPoint(x1, x0, dist, vector) {
     let seno = dist / getNorm(getDiff(x1, x0))
@@ -71,15 +106,11 @@ function hasColision(spaceObject1, spaceObject2, nextPos) {
    let x2 = nextPos;
 
    let d = getDistance(x0, x1, x2);
-   //console.log(d);
    if (d > (spaceObject1.radius + spaceObject2.radius)){
-        //console.log("tooo far")
        return false;
    }
 
-    //console.log("clossssssseeeeeeee")
     let point = getPoint(x1, x0, d, normalizeVector(getDiff(x2, x1)));
-   //console.log(point);
 
    if (inBetween(point[0], x1[0], x2[0]) && inBetween(point[1], x1[1], x2[1]) && inBetween(point[2], x1[2], x2[2]))
        return true;
@@ -481,6 +512,7 @@ function init() {
 
     createPlanet();
     createSpaceShip();
+    createGarbage();
     createMainCamera();
 
 
