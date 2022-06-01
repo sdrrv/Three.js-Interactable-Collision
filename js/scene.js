@@ -4,7 +4,7 @@ let teta, omega, r = 8
 
 let planet, clouds
 
-let spaceShipObject, wireframeBool;
+let spaceShipObject;
 
 let garbage = [];
 
@@ -71,7 +71,6 @@ function getDiff(vector1, vector2){
 }
 
 function getDistance(x0, x1, x2) {
-    console.log(getNorm(getExternalProduct(getDiff(x2, x1), getDiff(x1, x0))));
     return getNorm(getExternalProduct(getDiff(x2, x1), getDiff(x1, x0))) / getNorm(getDiff(x2, x1))
 }
 
@@ -176,7 +175,7 @@ function createSpaceShip(){
 
 function createShipBody(obj){
     let geometry = new THREE.CylinderGeometry(4, 4, 8, 16, 16, false, 0, 2 * Math.PI);
-    const material = new THREE.MeshToonMaterial( { color: 0x808080, wireframe: wireframeBool } );
+    const material = new THREE.MeshToonMaterial( { color: 0x808080 } );
     obj = new THREE.Mesh(geometry, material);
     obj.position.set(0, 0, 0);
     spaceShipObject.add(obj);
@@ -184,7 +183,7 @@ function createShipBody(obj){
 
 function createShipNose(obj){
     let geometry = new THREE.CylinderGeometry(1, 4, 4, 16, 1, false, 0, 2 * Math.PI);
-    const material = new THREE.MeshToonMaterial( { color: 0xff8c00, wireframe: wireframeBool } );
+    const material = new THREE.MeshToonMaterial( { color: 0xff8c00 } );
     obj = new THREE.Mesh(geometry, material);
     obj.position.set(0, 6, 0);
     spaceShipObject.add(obj);
@@ -192,7 +191,7 @@ function createShipNose(obj){
 
 function createShipFireEngine(obj, x, y, z){
     let geometry = new THREE.CapsuleGeometry(1.5, 2.5, 16, 16);
-    const material = new THREE.MeshToonMaterial( { color: 0x36454f, wireframe: wireframeBool } );
+    const material = new THREE.MeshToonMaterial( { color: 0x36454f} );
     obj = new THREE.Mesh(geometry, material);
     obj.position.set(x, y, z);
     spaceShipObject.add(obj);
@@ -200,7 +199,7 @@ function createShipFireEngine(obj, x, y, z){
 
 function createVisor(obj, x, y, z){
     let geometry = new THREE.CylinderGeometry(4.01, 4.01, 2, 8, 4, false, 0, Math.PI * 0.35);
-    const material = new THREE.MeshToonMaterial( { color: 0x1ca8ff, wireframe: wireframeBool } );
+    const material = new THREE.MeshToonMaterial( { color: 0x1ca8ff} );
     obj = new THREE.Mesh(geometry, material);
     obj.position.set(x, y, z);
     obj.rotation.y = Math.PI * 0.08;
@@ -329,7 +328,16 @@ function animate(){
         omega += shipSpeed;
     }
 
-    spaceShipObject.lookAt(planet.position);
+
+    if(checkColision) {
+
+        spaceShipObject.up.set(
+            r * Math.sin(teta) * Math.sin(omega),
+            r * Math.cos(omega),
+            r * Math.cos(teta) * Math.sin(omega)).normalize();
+
+        spaceShipObject.lookAt(planet.position);
+    }
     if (checkColision && hasColision(rocket, box, [r* Math.sin(teta) *Math.sin(omega),
         r * Math.cos(omega),
         r * Math.cos(teta) * Math.sin(omega)])) {
@@ -391,8 +399,8 @@ function createFollowCamera() {
         window.innerWidth / window.innerHeight,
         1,
         1000);
-    camera.position.y = 5;
-    camera.position.z = 3;
+    camera.position.y = -20;
+    camera.position.z = -20;
     camera.lookAt(scene.position);
     spaceShipObject.add(camera);
 }
@@ -482,8 +490,6 @@ function init() {
     let x1 = [0, 0, 0]
     let x2 = [0, 1, 0]
     let d = getDistance(x0, x1, x2)
-    console.log(getDistance(x0, x1, x2))
-    console.log(getPoint(x1, x0, d, normalizeVector(getDiff(x2, x1))))
 
     //let rocket = new spaceObject(x1, 1);
     //let debris = new spaceObject(x0, 0.5);
