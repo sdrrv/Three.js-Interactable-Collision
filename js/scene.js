@@ -4,7 +4,9 @@ let teta, omega, r = 8
 
 let planet, clouds
 
-let spaceShipObject, wireframeBool;
+let spaceShipObject;
+
+let garbage = [];
 
 let noQuadrant = [];
 
@@ -83,7 +85,47 @@ function ToQuadrants(){
 class spaceObject{
     constructor(object, radius) {
         this.object = object;
-        this.radius = radius
+        this.radius = radius;
+    }
+}
+
+function getRandomInt(max) {
+    return Math.floor(Math.random() * max);
+}
+
+function getGeometry(form){
+    switch (form){
+        case 0:
+            return
+    }
+}
+
+function createGarbage() {
+    for (let i = 0; i < 20; i++) {
+        let form = getRandomInt(4);
+        let garbageTeta = Math.random() * Math.PI;
+        let garbageOmega = Math.random() * 2 * Math.PI;
+        let geometry;
+        let radius;
+        const material = new THREE.MeshToonMaterial({color: 0xfc03c6});
+
+        switch (form) {
+            case 0:
+                geometry = new THREE.BoxGeometry(1, 1, 1, 1, 1, 1);
+                radius = Math.sqrt(3) / 2;
+                break;
+            case 1:
+                geometry = new THREE.ConeGeometry(1, 1, 16, 16, false, 0, Math.PI * 2);
+                radius = Math.sqrt(5) / 2;
+                break;
+        }
+
+        let garbageObject = new THREE.Mesh(geometry, material);
+        garbageObject.position.set(r* Math.sin(garbageTeta) *Math.sin(garbageOmega),
+            r * Math.cos(garbageOmega),
+            r * Math.cos(garbageTeta) * Math.sin(garbageOmega));
+        garbage.push(new spaceObject(garbageObject), radius);
+        scene.add(garbageObject);
     }
 }
 
@@ -112,13 +154,6 @@ function normalizeVector(vector) {
         newVector.push(vector[i] / norm);
     return newVector
 }
-/*
-def getPoint(x1, x0, dist, vector):
-seno = dist / getNorm(getDiff(x1, x0))
-angle = math.asin(seno)
-cos = math.cos(angle)
-d = getNorm(getDiff(x1, x0)) * cos
-return [x1[i] + d * vector[i] for i in range(3)] */
 
 function getPoint(x1, x0, dist, vector) {
     let seno = dist / getNorm(getDiff(x1, x0))
@@ -212,7 +247,7 @@ function createSpaceShip(){
 
 function createShipBody(obj){
     let geometry = new THREE.CylinderGeometry(4, 4, 8, 16, 16, false, 0, 2 * Math.PI);
-    const material = new THREE.MeshToonMaterial( { color: 0x808080, wireframe: wireframeBool } );
+    const material = new THREE.MeshToonMaterial( { color: 0x808080 } );
     obj = new THREE.Mesh(geometry, material);
     obj.position.set(0, 0, 0);
     shipBody = obj;
@@ -221,7 +256,7 @@ function createShipBody(obj){
 
 function createShipNose(obj){
     let geometry = new THREE.CylinderGeometry(1, 4, 4, 16, 1, false, 0, 2 * Math.PI);
-    const material = new THREE.MeshToonMaterial( { color: 0xff8c00, wireframe: wireframeBool } );
+    const material = new THREE.MeshToonMaterial( { color: 0xff8c00 } );
     obj = new THREE.Mesh(geometry, material);
     obj.position.set(0, 6, 0);
     spaceShipObject.add(obj);
@@ -229,7 +264,7 @@ function createShipNose(obj){
 
 function createShipFireEngine(obj, x, y, z){
     let geometry = new THREE.CapsuleGeometry(1.5, 2.5, 16, 16);
-    const material = new THREE.MeshToonMaterial( { color: 0x36454f, wireframe: wireframeBool } );
+    const material = new THREE.MeshToonMaterial( { color: 0x36454f} );
     obj = new THREE.Mesh(geometry, material);
     obj.position.set(x, y, z);
     spaceShipObject.add(obj);
@@ -237,7 +272,7 @@ function createShipFireEngine(obj, x, y, z){
 
 function createVisor(obj, x, y, z){
     let geometry = new THREE.CylinderGeometry(4.01, 4.01, 2, 8, 4, false, 0, Math.PI * 0.35);
-    const material = new THREE.MeshToonMaterial( { color: 0x1ca8ff, wireframe: wireframeBool } );
+    const material = new THREE.MeshToonMaterial( { color: 0x1ca8ff} );
     obj = new THREE.Mesh(geometry, material);
     obj.position.set(x, y, z);
     obj.rotation.y = Math.PI * 0.08;
@@ -366,6 +401,15 @@ function animate(){
         omega += shipSpeed;
     }
 
+    if(checkColision) {
+        spaceShipObject.up.set(
+            r * Math.sin(teta) * Math.sin(omega),
+            r * Math.cos(omega),
+            r * Math.cos(teta) * Math.sin(omega)).normalize();
+
+        spaceShipObject.lookAt(planet.position);
+    }
+
     if (checkColision && hasColision(rocket, box, [r* Math.sin(teta) *Math.sin(omega),
         r * Math.cos(omega),
         r * Math.cos(teta) * Math.sin(omega)])) {
@@ -427,8 +471,8 @@ function createFollowCamera() {
         window.innerWidth / window.innerHeight,
         1,
         1000);
-    camera.position.y = 5;
-    camera.position.z = 3;
+    camera.position.y = -20;
+    camera.position.z = -20;
     camera.lookAt(scene.position);
     spaceShipObject.add(camera);
 }
@@ -515,6 +559,16 @@ function init() {
     //
     //x1-------------------x2
 
+    let x0 = [0, 2.5, 0]
+    let x1 = [0, 0, 0]
+    let x2 = [0, 1, 0]
+    let d = getDistance(x0, x1, x2)
+
+    //let rocket = new spaceObject(x1, 1);
+    //let debris = new spaceObject(x0, 0.5);
+    //console.log(hasColision(rocket, debris, x2));
+
+
     clock = new THREE.Clock();
     teta = Math.PI/2;
     omega = Math.PI/2;
@@ -533,6 +587,7 @@ function init() {
 
     createPlanet();
     createSpaceShip();
+    createGarbage();
     createMainCamera();
 
 
