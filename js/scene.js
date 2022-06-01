@@ -17,24 +17,17 @@ Quadrant1 = [];
 Quadrant2 = [];
 Quadrant3 = [];
 Quadrant4 = [];
-Quadrant5 = [];
-Quadrant6 = [];
 
 
 function calculateQuadrant(Obj){
-    if(Obj.x > 0 && Obj.y > 0 && Obj.z > 0)
+    if(Obj.position.x > 0 && Obj.position.y > 0)
         return "Quadrant1"
-    else if(Obj.x > 0 && Obj.y > 0 && Obj.z < 0)
+    else if(Obj.position.x > 0 && Obj.position.y < 0)
         return "Quadrant2"
-    else if(Obj.x > 0 && Obj.y < 0 && Obj.z < 0)
+    else if(Obj.position.x < 0 && Obj.position.y > 0)
         return "Quadrant3"
-
-    else if(Obj.x < 0 && Obj.y > 0 && Obj.z > 0)
+    else if(Obj.position.x < 0 && Obj.position.y < 0)
         return "Quadrant4"
-    else if(Obj.x < 0 && Obj.y > 0 && Obj.z < 0)
-        return "Quadrant5"
-    else if(Obj.x < 0 && Obj.y < 0 && Obj.z < 0)
-        return "Quadrant6"
 }
 
 function getObjectsInTheSameQuadrant(quadrant){
@@ -47,34 +40,24 @@ function getObjectsInTheSameQuadrant(quadrant){
             return Quadrant3;
         case "Quadrant4":
             return Quadrant4;
-        case "Quadrant5":
-            return Quadrant5;
-        case "Quadrant6":
-            return Quadrant6;
     }
 }
 
-function ToQuadrants(){
+function toQuadrants(){
     for(let obj of noQuadrant){
-        let quad = calculateQuadrant(obj);
+        let quad = calculateQuadrant(obj.object);
         switch (quad){
             case "Quadrant1":
-                Quadrant1.add(obj);
+                Quadrant1.push(obj);
                 break;
             case "Quadrant2":
-                Quadrant2.add(obj);
+                Quadrant2.push(obj);
                 break;
             case "Quadrant3":
-                Quadrant3.add(obj);
+                Quadrant3.push(obj);
                 break;
             case "Quadrant4":
-                Quadrant4.add(obj);
-                break;
-            case "Quadrant5":
-                Quadrant5.add(obj);
-                break;
-            case "Quadrant6":
-                Quadrant6.add(obj);
+                Quadrant4.push(obj);
                 break;
         }
 
@@ -205,6 +188,7 @@ function createlilbox(){
         r * Math.cos(omega),
         r * Math.cos(teta) * Math.sin(omega));
     scene.add(box.object);
+    noQuadrant.push(box);
 }
 
 
@@ -374,6 +358,18 @@ function createPlanet(){
 }
 
 
+function checkColisionWithShip(){
+    let spaceShipQuad = calculateQuadrant(rocket.object);
+    let sameQuad = getObjectsInTheSameQuadrant(spaceShipQuad);
+    for(let objs of sameQuad){
+        if(hasColision(rocket, objs, [r* Math.sin(teta) *Math.sin(omega),
+            r * Math.cos(omega),
+            r * Math.cos(teta) * Math.sin(omega)])){
+            scene.remove(objs.object);
+        }
+    }
+}
+
 
 //let shipSpeed =0.005;
 let shipSpeed =0.01;
@@ -394,12 +390,13 @@ function animate(){
     }
     if(arrowUpDown){
         checkColision = true;
-        omega -= shipSpeed;
+        omega += shipSpeed;
     }
     if(arrowDownDown){
         checkColision = true;
-        omega += shipSpeed;
+        omega -= shipSpeed;
     }
+
 
     if(checkColision) {
         spaceShipObject.up.set(
@@ -408,14 +405,10 @@ function animate(){
             r * Math.cos(teta) * Math.sin(omega)).normalize();
 
         spaceShipObject.lookAt(planet.position);
+
+        checkColisionWithShip();
     }
 
-    if (checkColision && hasColision(rocket, box, [r* Math.sin(teta) *Math.sin(omega),
-        r * Math.cos(omega),
-        r * Math.cos(teta) * Math.sin(omega)])) {
-        console.log("Collision with: " + box.object)
-        scene.remove(box.object);
-    }
 
     spaceShipObject.position.set(r* Math.sin(teta) *Math.sin(omega),
     r * Math.cos(omega),
@@ -435,17 +428,14 @@ function createScene() {
     scene.add(new THREE.AxesHelper(10));
 
     const loader = new THREE.CubeTextureLoader();
-    const texture = loader.load([
+    scene.background = loader.load([
         "galaxy/galaxy-X.png",
         "galaxy/galaxy-Y.png",
         "galaxy/galaxy-Z.png",
-       "galaxy/galaxy+X.png",
+        "galaxy/galaxy+X.png",
         "galaxy/galaxy+Y.png",
         "galaxy/galaxy+Z.png",
     ]);
-
-
-    scene.background = texture;
 
 }
 
@@ -591,6 +581,7 @@ function init() {
     createMainCamera();
 
 
+    toQuadrants(); // Puts the objects into his Quadrant
     render();
     animate();
 
