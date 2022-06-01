@@ -6,6 +6,79 @@ let planet, clouds
 
 let spaceShipObject, wireframeBool;
 
+let noQuadrant = [];
+
+
+let Quadrant1, Quadrant2, Quadrant3, Quadrant4;
+
+Quadrant1 = [];
+Quadrant2 = [];
+Quadrant3 = [];
+Quadrant4 = [];
+Quadrant5 = [];
+Quadrant6 = [];
+
+
+function calculateQuadrant(Obj){
+    if(Obj.x > 0 && Obj.y > 0 && Obj.z > 0)
+        return "Quadrant1"
+    else if(Obj.x > 0 && Obj.y > 0 && Obj.z < 0)
+        return "Quadrant2"
+    else if(Obj.x > 0 && Obj.y < 0 && Obj.z < 0)
+        return "Quadrant3"
+
+    else if(Obj.x < 0 && Obj.y > 0 && Obj.z > 0)
+        return "Quadrant4"
+    else if(Obj.x < 0 && Obj.y > 0 && Obj.z < 0)
+        return "Quadrant5"
+    else if(Obj.x < 0 && Obj.y < 0 && Obj.z < 0)
+        return "Quadrant6"
+}
+
+function getObjectsInTheSameQuadrant(quadrant){
+    switch (quadrant){
+        case "Quadrant1":
+            return Quadrant1;
+        case "Quadrant2":
+            return Quadrant2;
+        case "Quadrant3":
+            return Quadrant3;
+        case "Quadrant4":
+            return Quadrant4;
+        case "Quadrant5":
+            return Quadrant5;
+        case "Quadrant6":
+            return Quadrant6;
+    }
+}
+
+function ToQuadrants(){
+    for(let obj of noQuadrant){
+        let quad = calculateQuadrant(obj);
+        switch (quad){
+            case "Quadrant1":
+                Quadrant1.add(obj);
+                break;
+            case "Quadrant2":
+                Quadrant2.add(obj);
+                break;
+            case "Quadrant3":
+                Quadrant3.add(obj);
+                break;
+            case "Quadrant4":
+                Quadrant4.add(obj);
+                break;
+            case "Quadrant5":
+                Quadrant5.add(obj);
+                break;
+            case "Quadrant6":
+                Quadrant6.add(obj);
+                break;
+        }
+
+    }
+}
+
 
 class spaceObject{
     constructor(object, radius) {
@@ -29,7 +102,6 @@ function getDiff(vector1, vector2){
 }
 
 function getDistance(x0, x1, x2) {
-    console.log(getNorm(getExternalProduct(getDiff(x2, x1), getDiff(x1, x0))));
     return getNorm(getExternalProduct(getDiff(x2, x1), getDiff(x1, x0))) / getNorm(getDiff(x2, x1))
 }
 
@@ -71,15 +143,11 @@ function hasColision(spaceObject1, spaceObject2, nextPos) {
    let x2 = nextPos;
 
    let d = getDistance(x0, x1, x2);
-   //console.log(d);
    if (d > (spaceObject1.radius + spaceObject2.radius)){
-        //console.log("tooo far")
        return false;
    }
 
-    //console.log("clossssssseeeeeeee")
     let point = getPoint(x1, x0, d, normalizeVector(getDiff(x2, x1)));
-   //console.log(point);
 
    if (inBetween(point[0], x1[0], x2[0]) && inBetween(point[1], x1[1], x2[1]) && inBetween(point[2], x1[2], x2[2]))
        return true;
@@ -119,8 +187,7 @@ function createSatellite(){
     let sat1 = new THREE.Mesh(geometry,material);
 
 
-    //sat1.position.x += 5;
-    //sat1.position.z += 5;
+
 
     spaceShipObject.add(sat1);
     scene.add(spaceShipObject);
@@ -148,6 +215,7 @@ function createShipBody(obj){
     const material = new THREE.MeshToonMaterial( { color: 0x808080, wireframe: wireframeBool } );
     obj = new THREE.Mesh(geometry, material);
     obj.position.set(0, 0, 0);
+    shipBody = obj;
     spaceShipObject.add(obj);
 }
 
@@ -298,12 +366,11 @@ function animate(){
         omega += shipSpeed;
     }
 
-    spaceShipObject.lookAt(planet.position);
     if (checkColision && hasColision(rocket, box, [r* Math.sin(teta) *Math.sin(omega),
         r * Math.cos(omega),
         r * Math.cos(teta) * Math.sin(omega)])) {
+        console.log("Collision with: " + box.object)
         scene.remove(box.object);
-        console.log("colisonnnn");
     }
 
     spaceShipObject.position.set(r* Math.sin(teta) *Math.sin(omega),
@@ -447,22 +514,10 @@ function init() {
     //  ----------x0-------
     //
     //x1-------------------x2
-    let x0 = [0, 2.5, 0]
-    let x1 = [0, 0, 0]
-    let x2 = [0, 1, 0]
-    let d = getDistance(x0, x1, x2)
-    console.log(getDistance(x0, x1, x2))
-    console.log(getPoint(x1, x0, d, normalizeVector(getDiff(x2, x1))))
-
-    //let rocket = new spaceObject(x1, 1);
-    //let debris = new spaceObject(x0, 0.5);
-    //console.log(hasColision(rocket, debris, x2));
-
-
 
     clock = new THREE.Clock();
-    teta = Math.random();
-    omega = Math.random();
+    teta = Math.PI/2;
+    omega = Math.PI/2;
 
     renderer = new THREE.WebGLRenderer({
         antialias: true
@@ -472,9 +527,6 @@ function init() {
 
     createScene();
     createLight();
-
-
-
 
 
     createlilbox();
