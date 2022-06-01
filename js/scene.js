@@ -90,7 +90,7 @@ function createGarbage() {
         let garbageOmega = Math.random() * 2 * Math.PI;
         let geometry;
         let radius;
-        const material = new THREE.MeshToonMaterial({color: 0xfc03c6});
+        const material = new THREE.MeshPhongMaterial({color: 0xfc03c6});
 
         switch (form) {
             case 0:
@@ -107,8 +107,10 @@ function createGarbage() {
         garbageObject.position.set(r* Math.sin(garbageTeta) *Math.sin(garbageOmega),
             r * Math.cos(garbageOmega),
             r * Math.cos(garbageTeta) * Math.sin(garbageOmega));
-        garbage.push(new spaceObject(garbageObject), radius);
+        let garbageModel = new spaceObject(garbageObject, radius);
+        garbage.push(garbageModel);
         scene.add(garbageObject);
+        noQuadrant.push(garbageModel);
     }
 }
 
@@ -549,19 +551,9 @@ function init() {
     //
     //x1-------------------x2
 
-    let x0 = [0, 2.5, 0]
-    let x1 = [0, 0, 0]
-    let x2 = [0, 1, 0]
-    let d = getDistance(x0, x1, x2)
-
-    //let rocket = new spaceObject(x1, 1);
-    //let debris = new spaceObject(x0, 0.5);
-    //console.log(hasColision(rocket, debris, x2));
-
-
     clock = new THREE.Clock();
-    teta = Math.PI/2;
-    omega = Math.PI/2;
+    teta = Math.random();
+    omega = Math.random();
 
     renderer = new THREE.WebGLRenderer({
         antialias: true
