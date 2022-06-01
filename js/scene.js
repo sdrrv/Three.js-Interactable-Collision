@@ -178,20 +178,6 @@ function hasColision(spaceObject1, spaceObject2, nextPos) {
 
 
 
-let box;
-function createlilbox(){
-    'use strict';
-    let geometry = new THREE.BoxGeometry(1,1,1);
-    let material = new THREE.MeshPhongMaterial();
-    box = new spaceObject(new THREE.Mesh(geometry, material), Math.sqrt(3) / 2);
-    let teta = Math.PI/2;
-    let omega = Math.PI/2;
-    box.object.position.set(r* Math.sin(teta) *Math.sin(omega),
-        r * Math.cos(omega),
-        r * Math.cos(teta) * Math.sin(omega));
-    scene.add(box.object);
-    noQuadrant.push(box);
-}
 
 
 
@@ -565,7 +551,6 @@ function init() {
     createLight();
 
 
-    createlilbox();
 
     createPlanet();
     createSpaceShip();
