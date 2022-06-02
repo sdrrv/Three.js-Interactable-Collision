@@ -1,6 +1,8 @@
-let camera, renderer, scene
+let camera, renderer, scene;
 
-let teta, omega, r = 8
+let teta, omega, r = 15;
+
+let orbit = r * 1.2;
 
 let planet, clouds
 
@@ -95,18 +97,19 @@ function createGarbage() {
         switch (form) {
             case 0:
                 geometry = new THREE.BoxGeometry(1, 1, 1, 1, 1, 1);
-                radius = Math.sqrt(3) / 2;
+                radius = Math.sqrt(3) / 2 * r/22;
                 break;
             case 1:
                 geometry = new THREE.ConeGeometry(1, 1, 16, 16, false, 0, Math.PI * 2);
-                radius = Math.sqrt(5) / 2;
+                radius = Math.sqrt(5) / 2 * r/22;
                 break;
         }
 
         let garbageObject = new THREE.Mesh(geometry, material);
-        garbageObject.position.set(r* Math.sin(garbageTeta) *Math.sin(garbageOmega),
-            r * Math.cos(garbageOmega),
-            r * Math.cos(garbageTeta) * Math.sin(garbageOmega));
+        garbageObject.scale.set(r/22, r/22, r/22);
+        garbageObject.position.set(orbit * Math.sin(garbageTeta) *Math.sin(garbageOmega),
+            orbit * Math.cos(garbageOmega),
+            orbit * Math.cos(garbageTeta) * Math.sin(garbageOmega));
         let garbageModel = new spaceObject(garbageObject, radius);
         garbage.push(garbageModel);
         scene.add(garbageObject);
@@ -211,7 +214,7 @@ function createSpaceShip(){
     createShipFireEngine(engine3, 0, -4, 4);
     createShipFireEngine(engine4, 0, -4, -4);
     createVisor(shipVisor, 0, 2, 0);
-    spaceShipObject.scale.set(0.15, 0.15, 0.15);
+    spaceShipObject.scale.set(1/10 * r/10, 1/10 * r/10, 1/10 * r /10);
     scene.add(spaceShipObject);
     rocket = new spaceObject(spaceShipObject, Math.sqrt(3) / 2);
 
@@ -302,7 +305,7 @@ function createClouds(){
     }, false);
     imageMap.src = 'planet/cloud1.jpg';
 
-    geometry = new THREE.SphereGeometry(5.025, 32, 32)
+    geometry = new THREE.SphereGeometry(r + 0.005 * r, 32, 32)
     material = new THREE.MeshPhongMaterial({
         map: new THREE.Texture(canvasResult),
         side: THREE.DoubleSide,
@@ -317,7 +320,7 @@ function createClouds(){
 
 
 function createPlanet(){
-    let geometry = new THREE.SphereGeometry(5, 32, 32);
+    let geometry = new THREE.SphereGeometry(r, 32, 32);
 
     planet = new THREE.Object3D();
 
@@ -350,9 +353,9 @@ function checkColisionWithShip(){
     let spaceShipQuad = calculateQuadrant(rocket.object);
     let sameQuad = getObjectsInTheSameQuadrant(spaceShipQuad);
     for(let objs of sameQuad){
-        if(hasColision(rocket, objs, [r* Math.sin(teta) *Math.sin(omega),
-            r * Math.cos(omega),
-            r * Math.cos(teta) * Math.sin(omega)])){
+        if(hasColision(rocket, objs, [orbit *  Math.sin(teta) * Math.sin(omega),
+            orbit * Math.cos(omega),
+            orbit * Math.cos(teta) * Math.sin(omega)])){
             scene.remove(objs.object);
         }
     }
@@ -388,9 +391,9 @@ function animate(){
 
     if(checkColision) {
         spaceShipObject.up.set(
-            r * Math.sin(teta) * Math.sin(omega),
-            r * Math.cos(omega),
-            r * Math.cos(teta) * Math.sin(omega)).normalize();
+            orbit * Math.sin(teta) * Math.sin(omega),
+            orbit * Math.cos(omega),
+            orbit * Math.cos(teta) * Math.sin(omega)).normalize();
 
         spaceShipObject.lookAt(planet.position);
 
@@ -398,9 +401,9 @@ function animate(){
     }
 
 
-    spaceShipObject.position.set(r* Math.sin(teta) *Math.sin(omega),
-    r * Math.cos(omega),
-    r * Math.cos(teta) * Math.sin(omega));
+    spaceShipObject.position.set(orbit * Math.sin(teta) * Math.sin(omega),
+    orbit * Math.cos(omega),
+    orbit * Math.cos(teta) * Math.sin(omega));
 
 
 
@@ -435,8 +438,8 @@ function createMainCamera() {
         window.innerWidth / window.innerHeight,
         1,
         1000);
-    camera.position.z = 20;
-    camera.position.y = 10;
+    camera.position.z = 2 * r;
+    camera.position.y = 1 * r;
     camera.lookAt(scene.position);
     //spaceShipObject.add(camera);
     scene.add(camera);
