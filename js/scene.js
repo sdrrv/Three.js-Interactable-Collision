@@ -1,6 +1,6 @@
 let camera, renderer, scene;
 
-let teta, omega, r = 15;
+let teta, omega, r = 40;
 
 let orbit = r * 1.2;
 
@@ -97,17 +97,17 @@ function createGarbage() {
         switch (form) {
             case 0:
                 geometry = new THREE.BoxGeometry(1, 1, 1, 1, 1, 1);
-                radius = Math.sqrt(3) / 2 * r/22;
+                radius = Math.sqrt(3) / 2 * r/24;
                 break;
             case 1:
                 geometry = new THREE.ConeGeometry(1, 1, 16, 16, false, 0, Math.PI * 2);
-                radius = Math.sqrt(5) / 2 * r/22;
+                radius = Math.sqrt(5) / 2 * r/24;
                 break;
         }
 
         let garbageObject = new THREE.Mesh(geometry, material);
-        garbageObject.scale.set(r/22, r/22, r/22);
-        garbageObject.position.set(orbit * Math.sin(garbageTeta) *Math.sin(garbageOmega),
+        garbageObject.scale.set(r/24, r/24, r/24);
+        garbageObject.position.set(orbit * Math.sin(garbageTeta) * Math.sin(garbageOmega),
             orbit * Math.cos(garbageOmega),
             orbit * Math.cos(garbageTeta) * Math.sin(garbageOmega));
         let garbageModel = new spaceObject(garbageObject, radius);
@@ -185,24 +185,7 @@ function hasColision(spaceObject1, spaceObject2, nextPos) {
 
 
 let rocket;
-function createSatellite(){
-    'use strict';
 
-    spaceShipObject = new THREE.Object3D();
-
-    let geometry = new THREE.BoxGeometry(1,1,1);
-    let material = new THREE.MeshPhongMaterial();
-
-
-    let sat1 = new THREE.Mesh(geometry,material);
-
-
-
-
-    spaceShipObject.add(sat1);
-    scene.add(spaceShipObject);
-
-}
 
 var shipBody, shipNose, engine1, engine2, engine3, engine4, shipVisor;
 function createSpaceShip(){
@@ -214,9 +197,9 @@ function createSpaceShip(){
     createShipFireEngine(engine3, 0, -4, 4);
     createShipFireEngine(engine4, 0, -4, -4);
     createVisor(shipVisor, 0, 2, 0);
-    spaceShipObject.scale.set(1/10 * r/10, 1/10 * r/10, 1/10 * r /10);
+    spaceShipObject.scale.set(1/9 * r/20, 1/9 * r/20, 1/9 * r /20);
     scene.add(spaceShipObject);
-    rocket = new spaceObject(spaceShipObject, Math.sqrt(3) / 2);
+    rocket = new spaceObject(spaceShipObject, r/20);
 
 }
 
@@ -439,7 +422,7 @@ function createMainCamera() {
         1,
         1000);
     camera.position.z = 2 * r;
-    camera.position.y = 1 * r;
+    camera.position.y = r;
     camera.lookAt(scene.position);
     //spaceShipObject.add(camera);
     scene.add(camera);
