@@ -318,7 +318,7 @@ function createPlanet(){
         map        :  smap,
         specularMap: specmap,
         specular : new THREE.Color('grey'),
-        bumpScale  :  0.3,
+        bumpScale  :  0.7,
     });
 
     clouds = createClouds();
@@ -435,8 +435,8 @@ function createFollowCamera() {
         window.innerWidth / window.innerHeight,
         1,
         1000);
-    camera.position.y = -20;
-    camera.position.z = -20;
+    camera.position.y = -30;
+    camera.position.z = -30;
     camera.lookAt(scene.position);
     spaceShipObject.add(camera);
 }
