@@ -428,6 +428,19 @@ function createMainCamera() {
     scene.add(camera);
 }
 
+function createMainOrtographicCamera() {
+    'use strict';
+    camera = new THREE.OrthographicCamera( window.innerWidth/-2, window.innerWidth / 2, window.innerHeight/2,window.innerHeight/-2,1,1000);
+    camera.position.x = 30;
+    camera.position.y = r;
+    camera.position.z = 2*r;
+    camera.zoom =10;
+    camera.updateProjectionMatrix();
+    camera.lookAt(scene.position);
+
+
+    scene.add(camera);
+}
 function createFollowCamera() {
 
     'use strict';
@@ -474,9 +487,12 @@ function onKeyDown(e) {
 
     switch (e.keyCode) {
         case 49: //1
-            createMainCamera();
+            createMainOrtographicCamera();
             break;
         case 50: //2
+            createMainCamera();
+            break;
+        case 51:  //3
             createFollowCamera();
             break;
         case 37: //leftArrow
